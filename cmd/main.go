@@ -1,19 +1,22 @@
-// cmd/main.go
-
 package main
 
 import (
 	"log"
 	"net/http"
-	"url-shortener/shortener" // Bu satırı kontrol edin
+
+	"github.com/gorilla/mux"
 )
 
 func main() {
-	http.HandleFunc("/create", shortener.HandleCreate)
-	http.HandleFunc("/r/", shortener.HandleRedirect)
+	r := mux.NewRouter()
+	r.HandleFunc("/", HomeHandler)
+	http.Handle("/", r)
+	log.Println("Server is listening on :8080")
+	log.Fatal(http.ListenAndServe(":8080", nil))
+}
 
-	log.Println("Server starting on port 8080...")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
-		log.Fatal("ListenAndServe:", err)
-	}
+// HomeHandler - Ana sayfa handler'ı
+func HomeHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("URL Shortener API is up and running!"))
 }
